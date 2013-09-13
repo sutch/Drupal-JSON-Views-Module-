@@ -9,17 +9,17 @@
  */
 function views_json_backend_views_data() {
   $data = array();
-  $data['json']['table']['group'] = t('Json');
+  $data['json']['table']['group'] = t('JSON');
 
   $data['json']['table']['base'] = array(
-    'title' => t('Json'),
-    'help' => t('Queries an Json file.'),
+    'title' => t('JSON'),
+    'help' => t('Queries a JSON file.'),
     'query class' => 'views_json_backend',
   );
 
   $data['json']['value'] = array(
-    'title' => t('value'),
-    'help' => t('value in the Json file.'),
+    'title' => t('Value'),
+    'help' => t('Value in the JSON file.'),
     'field' => array(
       'handler' => 'views_json_backend_handler_field',
       'click sortable' => TRUE,
@@ -76,8 +76,8 @@ function views_json_backend_views_plugins() {
   return array(
     'query' => array(
       'views_json_backend' => array(
-        'title' => t('Json'),
-        'help' => t('Reads from an Json file.'),
+        'title' => t('JSON'),
+        'help' => t('Reads from a JSON file.'),
         'handler' => 'views_json_backend_plugin_query_json',
       ),
     ),

@@ -114,14 +114,14 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
       $data->contents = $this->fetch_file($this->options['json_file']);
     }
     catch (Exception $e) {
-      drupal_set_message(t('Views Json Backend: ' . $e->getMessage()), 'error');
+      drupal_set_message(t('Views JSON Backend: ' . $e->getMessage()), 'error');
       return;
     }
 
     // When content is empty, parsing it is pointless.
     if (!$data->contents) {
       if ($this->options['show_errors']) {
-        drupal_set_message(t('Views Json Backend: File is empty.'), 'warning');
+        drupal_set_message(t('Views JSON Backend: File is empty.'), 'warning');
       }
       return;
     }
@@ -143,7 +143,7 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
 				$msg = $tmp[json_last_error()] . ' - ' . $this->options['json_file'];
 				drupal_set_message($msg, 'error');
 			} else {
-				drupal_set_message(t('Views Json Backend: Parse json error') . ' - ' . $this->options['json_file'], 'error');
+				drupal_set_message(t('Views JSON Backend: Parse JSON error') . ' - ' . $this->options['json_file'], 'error');
 			}
 		}
   }
@@ -254,7 +254,7 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
         drupal_set_message($e->getMessage(), 'error');
       }
       else {
-        debug($e->getMessage(), 'Views Json Backend');
+        debug($e->getMessage(), 'Views JSON Backend');
       }
     }
   }
@@ -273,9 +273,9 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
   function options_form(&$form, &$form_state) {
     $form['json_file'] = array(
       '#type' => 'textfield',
-      '#title' => t('Json File'),
+      '#title' => t('JSON file'),
       '#default_value' => $this->options['json_file'],
-      '#description' => t("The URL or path to the Json file."),
+      '#description' => t("The URL or path to the JSON file."),
 			'#maxlength' => 1024,
     );
 		$form['row_apath'] = array(
@@ -287,9 +287,9 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
 		);
     $form['show_errors'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Show Json errors'),
+      '#title' => t('Show JSON errors'),
       '#default_value' => $this->options['show_errors'],
-      '#description' => t('If there were any errors during Json parsing, display them. It is recommended to leave this on during development.'),
+      '#description' => t('If there were any errors during JSON parsing, display them. It is recommended to leave this on during development.'),
       '#required' => FALSE,
     );
   }

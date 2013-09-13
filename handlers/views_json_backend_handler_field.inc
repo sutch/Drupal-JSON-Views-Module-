@@ -50,8 +50,8 @@ class views_json_backend_handler_field extends views_handler_field {
   function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
     $form['key'] = array(
-      '#title' => t('Key Chooser'),
-      '#description' => t('choose a key'),
+      '#title' => t('Key'),
+      '#description' => t('The value\'s JSON key'),
       '#type' => 'textfield',
       '#default_value' => $this->options['key'],
       '#required' => TRUE,

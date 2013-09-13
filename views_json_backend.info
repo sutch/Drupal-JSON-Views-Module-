@@ -1,5 +1,5 @@
-name = Views Json Backend
-description = Adds a views backend to query Json files.
+name = Views JSON Backend
+description = Adds a views backend to query JSON files.
 package = Views
 dependencies[] = views
 core = 7.x

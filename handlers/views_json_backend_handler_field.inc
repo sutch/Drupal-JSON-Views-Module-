@@ -6,13 +6,13 @@
 
 class views_json_backend_handler_field extends views_handler_field {
   function render($values) {
-		
-		$key = $this->field_alias;
-		if (!isset($values->$key))
-			return '';
+
+    $key = $this->field_alias;
+    if (!isset($values->$key))
+      return '';
 
     $values = $values->$key;
-		/*
+    /*
     if ($this->options['multiple']) {
       foreach ($values as $i => $value) {
         $values[$i] = $this->render_field($value);
@@ -28,7 +28,7 @@ class views_json_backend_handler_field extends views_handler_field {
         'type' => $this->options['list_type'],
       ));
     }
-		*/
+    */
     return $this->render_field($values);
   }
 
@@ -39,11 +39,11 @@ class views_json_backend_handler_field extends views_handler_field {
   function option_definition() {
     $options = parent::option_definition();
     $options['key'] = array('default' => '');
-		/*
+    /*
     $options['multiple'] = array('default' => FALSE);
     $options['list_type'] = array('default' => 'ul');
     $options['custom_separator'] = array('default' => ', ');
-		*/
+    */
     return $options;
   }
 
@@ -56,7 +56,7 @@ class views_json_backend_handler_field extends views_handler_field {
       '#default_value' => $this->options['key'],
       '#required' => TRUE,
     );
-		/*
+    /*
     $form['multiple'] = array(
       '#title' => t('Allow multiple'),
       '#description' => t('Treat this field as multi-valued.'),
@@ -99,7 +99,7 @@ class views_json_backend_handler_field extends views_handler_field {
       ),
       '#fieldset' => 'list_options',
     );
-		*/
+    */
   }
 
   /**

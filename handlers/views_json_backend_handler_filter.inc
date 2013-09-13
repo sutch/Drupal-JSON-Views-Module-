@@ -10,7 +10,7 @@ class views_json_backend_handler_filter extends views_handler_filter_string {
 
   function option_definition() {
     $options = parent::option_definition();
-		$options['key'] = array('default' => '');
+    $options['key'] = array('default' => '');
     return $options;
   }
 
@@ -146,7 +146,7 @@ class views_json_backend_handler_filter extends views_handler_filter_string {
 
     // Awesome string escape.
     //$value = '"' . str_replace('"', '\"', $value) . '"';
-		return array($key, $operator, $value);
+    return array($key, $operator, $value);
   }
 
   function ui_name($short = FALSE) {

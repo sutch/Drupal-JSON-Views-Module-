@@ -15,12 +15,12 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
    */
   function query($get_count = FALSE) {
     $filters = array();
-		
-		if (isset($this->filter)) {
-			foreach ($this->filter as $filter) {
-				$filters[] = $filter->generate();
-			}
-		}
+
+    if (isset($this->filter)) {
+      foreach ($this->filter as $filter) {
+        $filters[] = $filter->generate();
+      }
+    }
     /**
      * @todo Add an option for the filters to be 'and' or 'or'.
      */
@@ -37,9 +37,9 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
     $this->pager->query();
 
     $view->build_info['query'] = $this->query();
-		/*
+    /*
     $view->build_info['count_query'] = 'count(' . $view->build_info['query'] . ')';
-		*/
+    */
     $view->build_info['query_args'] = array();
   }
 
@@ -129,86 +129,78 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
     // Go!
     $ret = $this->parse($view, $data);
     $view->execute_time = microtime(TRUE) - $start;
-		
-		if (!$ret) {
-			if (version_compare(phpversion(), '5.3.0', '>=')) {
-				$tmp = array(
-					JSON_ERROR_NONE => t('No error has occurred'),
-					JSON_ERROR_DEPTH => t('The maximum stack depth has been exceeded'),
-					JSON_ERROR_STATE_MISMATCH => t('Invalid or malformed JSON'),
-					JSON_ERROR_CTRL_CHAR => t('Control character error, possibly incorrectly encoded'),
-					JSON_ERROR_SYNTAX => t('Syntax error'),
-					JSON_ERROR_UTF8 => t('Malformed UTF-8 characters, possibly incorrectly encoded'),
-				);
-				$msg = $tmp[json_last_error()] . ' - ' . $this->options['json_file'];
-				drupal_set_message($msg, 'error');
-			} else {
-				drupal_set_message(t('Views JSON Backend: Parse JSON error') . ' - ' . $this->options['json_file'], 'error');
-			}
-		}
+
+    if (!$ret) {
+      if (version_compare(phpversion(), '5.3.0', '>=')) {
+        $tmp = array(
+          JSON_ERROR_NONE => t('No error has occurred'),
+          JSON_ERROR_DEPTH => t('The maximum stack depth has been exceeded'),
+          JSON_ERROR_STATE_MISMATCH => t('Invalid or malformed JSON'),
+          JSON_ERROR_CTRL_CHAR => t('Control character error, possibly incorrectly encoded'),
+          JSON_ERROR_SYNTAX => t('Syntax error'),
+          JSON_ERROR_UTF8 => t('Malformed UTF-8 characters, possibly incorrectly encoded'),
+        );
+        $msg = $tmp[json_last_error()] . ' - ' . $this->options['json_file'];
+        drupal_set_message($msg, 'error');
+      } else {
+        drupal_set_message(t('Views JSON Backend: Parse JSON error') . ' - ' . $this->options['json_file'], 'error');
+      }
+    }
   }
 
-	/**
-	 * fetch data in array according to apath
-	 *
-	 * @param string array path, something like '1/name/0'
-	 * @param array an array
-	 * @return array
-	 */
-	function apath($apath, $array)
-	{
-		$r = & $array;
-		$paths = explode('/', trim($apath, '//'));
-		foreach($paths as $path)
-		{
-			if (isset($r[$path]))
-			{
-				$r = & $r[$path];
-			}
-			else
-			{
-				break;
-			}
-		}
+  /**
+   * fetch data in array according to apath
+   *
+   * @param string array path, something like '1/name/0'
+   * @param array an array
+   * @return array
+   */
+  function apath($apath, $array) {
+    $r = & $array;
+    $paths = explode('/', trim($apath, '//'));
+    foreach($paths as $path) {
+      if (isset($r[$path])) {
+        $r = & $r[$path];
+      } else {
+        break;
+      }
+    }
+    return $r;
+  }
 
-		return $r;
-	}
-
-	/**
-	 * define ops for using in filter
-	 */
-	function ops($op, $l, $r)
-	{
-		$table = array(
-			'=' => create_function('$l,$r', 'return $l === $r;'),
-			'!=' => create_function('$l,$r', 'return $l !== $r;'),
-			'contains' => create_function('$l, $r', 'return strpos($l, $r) !== false;'),
-			'!contains' => create_function('$l, $r', 'return strpos($l, $r) === false;'),
-			'shorterthan' => create_function('$l, $r', 'return strlen($l) < $r;'),
-			'longerthan' => create_function('$l, $r', 'return strlen($l) > $r;'),
-		);
-		return call_user_func_array($table[$op], array($l, $r));
-	}
+  /**
+   * define ops for using in filter
+   */
+  function ops($op, $l, $r) {
+    $table = array(
+      '=' => create_function('$l,$r', 'return $l === $r;'),
+      '!=' => create_function('$l,$r', 'return $l !== $r;'),
+      'contains' => create_function('$l, $r', 'return strpos($l, $r) !== false;'),
+      '!contains' => create_function('$l, $r', 'return strpos($l, $r) === false;'),
+      'shorterthan' => create_function('$l, $r', 'return strlen($l) < $r;'),
+      'longerthan' => create_function('$l, $r', 'return strlen($l) > $r;'),
+    );
+    return call_user_func_array($table[$op], array($l, $r));
+  }
 
   function parse(&$view, $data) {
-		
-		$ret = json_decode($data->contents, true);
-		if (!$ret)
-			return false;
+    $ret = json_decode($data->contents, true);
+    if (!$ret)
+      return false;
 
-		// get rows
-		$ret = $this->apath($this->options['row_apath'], $ret);
+    // get rows
+    $ret = $this->apath($this->options['row_apath'], $ret);
 
-		// filter
-		foreach($ret as $k => $row) {
-			$check = true;
-			foreach ($view->build_info['query'] as $filter) {
-				eval('$l = $row[\'' . $filter[0] . '\'];');
-				$check = $this->ops($filter[1], $l, $filter[2]);
-				if (!$check) break;
-			}
-			if (!$check) unset($ret[$k]);
-		}
+    // filter
+    foreach($ret as $k => $row) {
+      $check = true;
+      foreach ($view->build_info['query'] as $filter) {
+        eval('$l = $row[\'' . $filter[0] . '\'];');
+        $check = $this->ops($filter[1], $l, $filter[2]);
+        if (!$check) break;
+      }
+      if (!$check) unset($ret[$k]);
+    }
 
     try {
       if ($this->pager->use_count_query() || !empty($view->get_total_rows)) {
@@ -226,10 +218,10 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
       // Let the pager modify the query to add limits.
       $this->pager->pre_execute($query);
 
-			// deal with offset & limit
-			$offset = !empty($this->offset) ? intval($this->offset) : 0;
-			$limit = !empty($this->limit) ? intval($this->limit) : 0;
-			$ret = $limit ? array_slice($ret, $offset, $limit) : array_slice($ret, $offset);
+      // deal with offset & limit
+      $offset = !empty($this->offset) ? intval($this->offset) : 0;
+      $limit = !empty($this->limit) ? intval($this->limit) : 0;
+      $ret = $limit ? array_slice($ret, $offset, $limit) : array_slice($ret, $offset);
 
       $result = array();
       foreach ($ret as $row) {
@@ -245,7 +237,7 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
       $view->total_rows = count($result);
 
       $this->pager->post_execute($view->result);
-			return true;
+      return true;
     }
     catch (Exception $e) {
       $view->result = array();
@@ -264,7 +256,7 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
   function option_definition() {
     $options = parent::option_definition();
     $options['json_file'] = array('default' => '');
-		$options['row_apath'] = array('default' => '');
+    $options['row_apath'] = array('default' => '');
     $options['show_errors'] = array('default' => TRUE);
 
     return $options;
@@ -276,15 +268,15 @@ class views_json_backend_plugin_query_json extends views_plugin_query {
       '#title' => t('JSON file'),
       '#default_value' => $this->options['json_file'],
       '#description' => t("The URL or path to the JSON file."),
-			'#maxlength' => 1024,
+      '#maxlength' => 1024,
     );
-		$form['row_apath'] = array(
+    $form['row_apath'] = array(
       '#type' => 'textfield',
       '#title' => t('Row Apath'),
       '#default_value' => $this->options['row_apath'],
       '#description' => t("Apath to records.<br />Apath is just a simple array item find method. Ex:<br /><pre>array('data' => \n\tarray('records' => \n\t\tarray(\n\t\t\tarray('name' => 'yarco', 'sex' => 'male'),\n\t\t\tarray('name' => 'someone', 'sex' => 'male')\n\t\t)\n\t)\n)</pre><br />You want 'records', so Apath could be set to 'data/records'. <br />Notice: prefix '/' or postfix '/' will be trimed, so never mind you add it or not."),
       '#required' => TRUE,
-		);
+    );
     $form['show_errors'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show JSON errors'),
